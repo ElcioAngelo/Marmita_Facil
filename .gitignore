@@ -1,0 +1,7 @@
+# Ignorando arquivos SQLITE 
+*.sqlite
+*.sqlite3
+*.db 
+
+# Ignorando arquivos .env
+*.env 

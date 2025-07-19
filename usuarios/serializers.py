@@ -1,0 +1,77 @@
+from rest_framework import serializers
+from .models import Usuario
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from django.contrib.auth import authenticate
+
+class UsuarioSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Usuario
+        fields = ['nome', 
+                  'password',
+                  'sobrenome',
+                  'email',
+                  'cidade',
+                  'endereco',
+                  'estado',
+                  'numero_telefone',
+                  'role'
+                ]
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = Usuario.objects.create_user(password=password, **validated_data)
+        return user 
+
+    def update(self, instance, validated_data):
+        request = self.context.get('request')
+        user_requesting = request.user if request else None 
+
+
+        ## Se não for superusuário, impede a troca de cargo. 
+        if 'role' in validated_data:
+            pode_alterar_cargo = (
+                user_requesting 
+                and (user_requesting.is_superuser or user_requesting.role == 'admin')
+            )
+
+        if not pode_alterar_cargo:
+            validated_data.pop('role') ## Remove a tentativa não autorizada.
+        
+        ## Remove a senha ao retornar os valores. 
+        password = validated_data.pop('password', None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(password)
+        
+        instance.save()
+        return instance 
+    
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = 'email'
+
+    def validate(self, attrs):
+        username = attrs.get(self.username_field)
+        password = attrs.get("password")
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+
+            if not user:
+                raise AuthenticationFailed(('Credenciais inválidas'), code='authentication_failed')
+            elif not username or not password:
+                raise AuthenticationFailed(('Por favor preencha todos os campos!'), code='authentication_failed')
+        refresh = self.get_token(user)
+        data = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user_id': user.id,
+            'email': user.email,
+            'role': user.role
+        }
+        return data
