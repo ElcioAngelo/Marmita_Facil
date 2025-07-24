@@ -3,7 +3,7 @@ from .models import Usuario
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from django.contrib.auth import authenticate
-
+from .models import Pedido
 class UsuarioSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -75,3 +75,18 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
             'role': user.role
         }
         return data
+    
+    
+
+class PedidoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pedido
+        fields = '__all__'
+        read_only_fields = ['usuario','data_pedido'] ## * Impede de alterar os campos manualmente.
+        
+        def create(self, validated_data):
+            request = self.context.get('request')
+            if request and request.user.is_authenticated:
+                validated_data['usuario'] = request.user
+            return Pedido.objects.create(**validated_data)
+        

@@ -21,10 +21,20 @@ class Marmita(models.Model):
     descricao = models.TextField(blank=True, null=True)
     ingredientes = models.TextField(max_length=255)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
-    disponivel = models.BooleanField(default=True)
     categoria = models.CharField(max_length=20, choices=CategoriaMarmita.choices, default=CategoriaMarmita.TRADICIONAL)
-    criada_por = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='marmitas', null=True)
     disponivel = models.BooleanField(default=True)
+    
+    @classmethod
+    def create_marmita(cls, cozinheiro, nome, preco, **extra_fields):
+        marmita = cls(
+            cozinheiro=cozinheiro,
+            nome=nome,
+            preco=preco,
+            **extra_fields
+        )
+        marmita.save()
+        return marmita
+        
 
 
     def __str__(self):

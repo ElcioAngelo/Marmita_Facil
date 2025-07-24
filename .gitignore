@@ -5,3 +5,4 @@
 
 # Ignorando arquivos .env
 *.env 
+node_modules

@@ -31,6 +31,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'marmitas',
+    'django_cron',
+]
+
+CRON_CLASSES = [
+    'marmitafacil.agendamento.ProcessarAgendamentosJob'
 ]
 
 MIDDLEWARE = [
