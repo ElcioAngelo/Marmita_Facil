@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Usuario
+from .models import Restaurante
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from django.contrib.auth import authenticate
@@ -89,4 +90,15 @@ class PedidoSerializer(serializers.ModelSerializer):
             if request and request.user.is_authenticated:
                 validated_data['usuario'] = request.user
             return Pedido.objects.create(**validated_data)
+        
+        
+class RestauranteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurante
+        fields = ['id', 'usuario','codigo','marmita']
+        
+        def validate_usuario(self,value):
+            if value.role != 'Cozinheiro':
+                raise serializers.ValidationError("Somente usuários com cargo 'cozinheiro' podem criar restaurantes.")
+            return value 
         

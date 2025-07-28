@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'marmitas',
-    'django_cron',
+    'rest_framework',
 ]
 
 CRON_CLASSES = [

@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from marmitas.models import Marmita
-from usuarios.models import Usuario
 from marmitafacil.settings import AUTH_USER_MODEL
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 class CargoUsuario(models.TextChoices):
     COZINHEIRO = 'cozinheiro', 'Cozinheiro'
@@ -64,7 +65,7 @@ class StatusPedido(models.TextChoices):
     
 class Pedido(models.Model):
     usuario = models.ForeignKey(
-        Usuario, 
+        AUTH_USER_MODEL, 
         on_delete=models.CASCADE,
         related_name='pedidos',
     )
@@ -96,4 +97,33 @@ class AgendamentoPedido(models.Model):
     
     def __str__(self):
         return f"{self.usuario.nome} -> {self.marmita.nome} ({self.dias_semana})"
+
+class Restaurante(models.Model):
+    usuario = models.ForeignKey(
+        AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='resturante' 
+    )
+    codigo = models.PositiveBigIntegerField(
+        validators=[
+            ## Valida se o número é positivo e contem 6 caracteres.
+            MinValueValidator(100000),
+            MaxValueValidator(999999)
+        ]
+    )
+    marmita = models.ForeignKey(Marmita, on_delete=models.CASCADE)
+    
+    ## Usuários com cargos diferente de COZINHEIRO,
+    # não podem criar e alterar um restaurante.
+    def clean(self):
+        if self.usuario.role != CargoUsuario.COZINHEIRO:
+            raise ValidationError("Apenas usuários com cargo 'cozinheiro' podem gerenciar restaurantes.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"Restaurante {self.codigo} - {self.usuario.nome}"
+    
     

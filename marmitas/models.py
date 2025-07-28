@@ -1,6 +1,6 @@
 from django.db import models
-from usuarios.models import Usuario
-from django.conf import settings
+from marmitafacil.settings import AUTH_USER_MODEL
+from django.db.models import UniqueConstraint
 
 # Create your models here.
 
@@ -13,7 +13,7 @@ class CategoriaMarmita(models.TextChoices):
 
 class Marmita(models.Model):
     cozinheiro = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='marmita', 
     )
@@ -42,7 +42,7 @@ class Marmita(models.Model):
 
 class Avaliacao(models.Model):
     cliente = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
+        AUTH_USER_MODEL, 
         on_delete=models.CASCADE,
         related_name='avaliacoes', 
     )
@@ -55,7 +55,10 @@ class Avaliacao(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ['cliente', 'prato']
+        constraints = [
+            UniqueConstraint(fields=['cliente','prato'], name='unique_cliente_prato')
+        ]
+        
 
     def __str__(self):
         return f"{self.cliente.email} avaliou {self.prato.nome} com {self.nota} estrela(s)"

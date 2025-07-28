@@ -11,6 +11,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import image from '../assets/imagem.png'
+import { Avatar } from '@mui/material';
 
 const MenuAppBar = () => {
   const [auth, setAuth] = React.useState(true);
@@ -30,7 +32,7 @@ const MenuAppBar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="static" sx={{bgcolor: ""}}>
         <Toolbar>
           <IconButton
             size="large"
@@ -41,8 +43,9 @@ const MenuAppBar = () => {
           >
             <MenuIcon />
           </IconButton>
+          <Avatar variant='square' src={image}/>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photos
+            MarmitaFácil
           </Typography>
             <div>
               <IconButton
