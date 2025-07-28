@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'usuarios',
     'marmitas',
     'rest_framework',
+    'corsheaders'
 ]
 
 CRON_CLASSES = [
@@ -46,6 +47,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'marmitafacil.urls'
@@ -123,5 +125,9 @@ SIMPLE_JWT = {
     'ACESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000"
+]
 
 

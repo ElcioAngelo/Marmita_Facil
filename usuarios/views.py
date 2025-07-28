@@ -1,4 +1,4 @@
-from .models import Usuario, Restaurante+
+from .models import Usuario, Restaurante
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status 
@@ -48,24 +48,31 @@ def login_com_email(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def fazer_pedido(request):
-    serializer = AgendamentoPedidoSerializer(data=request.data, context={'request': request})
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    try:
+        serializer = AgendamentoPedidoSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def criar_restaurante(request):
-    if request.user.role != 'cozinheiro':
-        return Response({"erro": "Somente cozinheiros podem criar restaurantes."}, status=status.HTTP_403_FORBIDDEN)
-    
-    serializer = RestauranteSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try: 
+        if request.user.role != 'cozinheiro':
+            return Response({"erro": "Somente cozinheiros podem criar restaurantes."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = RestauranteSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def atualizar_restaurante(request, id):
@@ -82,10 +89,20 @@ def atualizar_restaurante(request, id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def listar_restaurante(request):
-    user = request.user 
-    if user.role == 'Cozinheiro':
-        restaurantes = Restaurante.objects.filter(usuario=user)
-    else:
-        restaurantes = Restaurante.objects.all()
+def listar_restaurante(request, codigo):
+    try: 
+        user = request.user 
+        if user.role == 'Cozinheiro':
+            restaurante = Restaurante.objects.get(codigo=codigo, usuario=request.user)
+        else:
+            restaurante = Restaurante.objects.get(codigo=codigo)
+        serializer = RestauranteSerializer(restaurante)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Restaurante.DoesNotExist:
+        return Response(
+            {'detail': "Restaurante não encontrado."},
+            status=status.HTTP_404_NOT_FOUND
+        )
         
+
+

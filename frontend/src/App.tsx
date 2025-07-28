@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { Route, Routes } from 'react-router';
 import Home from './pages/Home'
-import Register from 'pages/Register';
+import Register from 'pages/Login';
 
 function App() {
   return (

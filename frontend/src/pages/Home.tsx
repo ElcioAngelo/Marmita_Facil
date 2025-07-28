@@ -1,15 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MenuAppBar from "components/MenuAppBar";
 import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search'
 
+interface Restaurante {
+    id: number,
+    codigo: number,
+    marmita: number;
+}
+
 const Home = () => {
     const [value, setValue] = useState<string>('');
+    const [restaurante, setRestaurante] = useState<Restaurante | null>(null);
     const [error, setError] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    
 
-   const useEffect = () => {
 
-   ,[]}
+   useEffect(() => {
+        const getRestaurantes = async () => {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`http://127.0.0.1:8000/api/restaurantes/${codigo}/`, {
+                    headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            setError(errorData.detail || "Erro ao buscar restaurante");
+            return;
+        }
+
+        const data = await response.json();
+        setRestaurante(data);    
+        }catch(exception){
+            console.error("Erro ao buscar restaurante: ", exception);
+            setError(true);
+            setErrorMessage('Erro de rede ou servidor');
+        }
+        }
+   }, []);
 
     return (
         <Box sx={{display: 'flex', justifyContent: 'center',
