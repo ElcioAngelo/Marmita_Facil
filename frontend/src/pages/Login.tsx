@@ -15,6 +15,7 @@ import { styled } from '@mui/material/styles';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Avatar } from '@mui/material';
 import imagem from '../assets/imagem.png'
+import Footer from 'components/Footer';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -58,7 +59,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-const Register = (props: { disableCustomTheme?: boolean }) => {
+const Login = (props: { disableCustomTheme?: boolean }) => {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
@@ -150,14 +151,6 @@ const Register = (props: { disableCustomTheme?: boolean }) => {
   return (
       <SignInContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
-         <Box sx={{display: 'flex',
-           justifyContent: 'center', alignContent: 'center', 
-           flexDirection: 'column'}}>
-              <img src={imagem} style={{height: 100, width: 100}}/>
-              <Typography>
-                MarmitaFacil
-              </Typography>
-         </Box>
           <Typography
             component="h1"
             variant="h4"
@@ -226,7 +219,7 @@ const Register = (props: { disableCustomTheme?: boolean }) => {
             <Typography sx={{ textAlign: 'center' }}>
               Ainda não tem uma conta?{' '}
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                href="/registro"
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >
@@ -235,7 +228,8 @@ const Register = (props: { disableCustomTheme?: boolean }) => {
             </Typography>
           </Box>
         </Card>
+        <Footer/>
       </SignInContainer>
   );
 }
-export default Register;
+export default Login;

@@ -4,6 +4,7 @@ from marmitas.models import Marmita
 from marmitafacil.settings import AUTH_USER_MODEL
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
+import random 
 # Create your models here.
 class CargoUsuario(models.TextChoices):
     COZINHEIRO = 'cozinheiro', 'Cozinheiro'
@@ -99,6 +100,8 @@ class AgendamentoPedido(models.Model):
         return f"{self.usuario.nome} -> {self.marmita.nome} ({self.dias_semana})"
 
 class Restaurante(models.Model):
+    nome = models.CharField(max_length=255, null=True)
+    descricao = models.TextField(null=True) 
     usuario = models.ForeignKey(
         AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -109,17 +112,22 @@ class Restaurante(models.Model):
             ## Valida se o número é positivo e contem 6 caracteres.
             MinValueValidator(100000),
             MaxValueValidator(999999)
-        ]
+        ],
+        unique=True,
+        blank=True,
+        null=True
     )
-    marmita = models.ForeignKey(Marmita, on_delete=models.CASCADE)
+    marmita = models.ForeignKey(Marmita, on_delete=models.CASCADE,null=True,blank=True)
     
-    ## Usuários com cargos diferente de COZINHEIRO,
-    # não podem criar e alterar um restaurante.
-    def clean(self):
-        if self.usuario.role != CargoUsuario.COZINHEIRO:
-            raise ValidationError("Apenas usuários com cargo 'cozinheiro' podem gerenciar restaurantes.")
-
+    def generate_codigo(self):
+        while True:
+            codigo = random.randint(100000, 999999)
+            if not Restaurante.objects.filter(codigo=codigo).exists():
+                return codigo
+    
     def save(self, *args, **kwargs):
+        if not self.codigo:
+            self.codigo = self.generate_codigo()
         self.full_clean()
         super().save(*args, **kwargs)
         

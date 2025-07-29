@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 # Create your views here.
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def listar_usuarios(request):
     usuarios = Usuario.objects.all().values(
         'id', 'nome', 'sobrenome', 'email',
@@ -46,7 +46,7 @@ def login_com_email(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def fazer_pedido(request):
     try:
         serializer = AgendamentoPedidoSerializer(data=request.data, context={'request': request})
@@ -58,13 +58,10 @@ def fazer_pedido(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def criar_restaurante(request):
     try: 
-        if request.user.role != 'cozinheiro':
-            return Response({"erro": "Somente cozinheiros podem criar restaurantes."}, status=status.HTTP_403_FORBIDDEN)
-        
-        serializer = RestauranteSerializer(data=data)
+        serializer = RestauranteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -74,7 +71,7 @@ def criar_restaurante(request):
 
     
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def atualizar_restaurante(request, id):
     try:
         restaurante = Restaurante.objects.get(pk=id, usuario=request.user)
@@ -88,7 +85,7 @@ def atualizar_restaurante(request, id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def listar_restaurante(request, codigo):
     try: 
         user = request.user 
@@ -104,5 +101,32 @@ def listar_restaurante(request, codigo):
             status=status.HTTP_404_NOT_FOUND
         )
         
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def mudar_cargo_para_cozinheiro(request):
+    try:
+        user = request.user 
+        user.role = 'Cozinheiro'
+        user.save()
+        return Response({'detail': 'Cargo alterado para cozinheiro com sucesso!'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': 'erro ao alterar cargo'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def buscar_restaurante(request, codigo):
+    try:
+        restaurante = Restaurante.objects.get(codigo=codigo)
+        serializer = RestauranteSerializer(restaurante)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Restaurante.DoesNotExist:
+        return Response(
+            {'detail': 'Restaurante não encontrado.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def perfil_usuario(request):
+    serializer = UsuarioSerializer(request.user)
+    return Response(serializer.data)
