@@ -55,6 +55,23 @@ const Profile = () => {
             open={open}
             onClose={() => setOpen(false)}
         />
+        <Box sx={{marginTop: 3}}>
+          <Typography>
+            Você tem 1 restaurante ativo!
+          </Typography>
+          <Button sx={{bgcolor: 'lightblue', color: '#000', marginTop: 2}}
+            onClick={() => window.location.href = '/restaurante/gerenciar/'}
+          >
+            Visualizar Restaurantes
+          </Button>
+          <br></br>
+          <Button sx={{bgcolor: 'coral', color: '#000', marginTop: 2}}
+            onClick={() => window.location.href = '/'}
+          >
+            Sair
+          </Button>
+        </Box>
+
     </Paper>
   );
 };

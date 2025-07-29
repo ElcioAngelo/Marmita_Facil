@@ -190,12 +190,12 @@ const Login = (props: { disableCustomTheme?: boolean }) => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
+              <FormLabel htmlFor="password">Senha</FormLabel>
               <TextField
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 name="password"
-                placeholder="••••••"
+                placeholder="Digite sua senha"
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
@@ -210,9 +210,9 @@ const Login = (props: { disableCustomTheme?: boolean }) => {
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
+              onClick={() => window.location.href = '/home'}
             >
-              Sign in
+              Entrar
             </Button>
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

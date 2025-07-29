@@ -8,7 +8,7 @@ import Register from 'pages/Register';
 import CreateRestaurant from 'pages/CreateRestaurant';
 import Profile from 'pages/Profile';
 import RestaurantePage from 'pages/RestaurantePage';
-
+import OwnerDashboard from 'pages/ManageRestaurant';
 function App() {
   return (
     <Routes>
@@ -18,6 +18,7 @@ function App() {
       <Route path='/restaurante/criar/' element={<CreateRestaurant/>}/>
       <Route path='/usuario/' element={<Profile/>}/>
       <Route path='/restaurante/visualizar' element={<RestaurantePage/>}/>
+      <Route path='/restaurante/gerenciar/' element={<OwnerDashboard/>}/>
     </Routes>
   );
 }

@@ -35,8 +35,12 @@ const RestauranteMockView: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Restaurante do Cozinheiro João
       </Typography>
-      <Typography variant="subtitle1" gutterBottom sx={{ mb: 4 }}>
+      <Typography variant="subtitle1" gutterBottom sx={{ mb: 0.5 }}>
         comidas de otíma qualidade!
+      </Typography>
+      <Typography>
+        <strong>Email:</strong> joao.silva@example.com <br></br>
+        <strong>Número:</strong> (11) 91234-5678
       </Typography>
       <Grid container spacing={3}>
         {mockMarmitas.map((marmita) => (
